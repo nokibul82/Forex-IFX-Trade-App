@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Peanut Trading',
         theme: ThemeData(
           primarySwatch: Colors.blue,
