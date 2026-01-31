@@ -16,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthStatus>(_onCheckAuthStatus);
+    on<SessionExpired>(_onSessionExpired);
   }
 
   Future<void> _onLoginRequested(
@@ -72,6 +73,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
+  }
+  Future<void> _onSessionExpired(
+      SessionExpired event,
+      Emitter<AuthState> emit,
+      ) async {
+    emit(SessionExpiredState('Your session has expired. Please login again.'));
   }
 
   @override

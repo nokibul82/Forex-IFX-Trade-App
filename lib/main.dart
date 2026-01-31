@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'presentation/bloc/account/account_bloc.dart';
-import 'presentation/bloc/auth/auth_bloc.dart';
+import 'presentation/bloc/promo/promo_bloc.dart';
 import 'presentation/pages/dashboard_page.dart';
 import 'presentation/pages/login_page.dart';
-
-import 'core/di/injector.dart';
+import 'presentation/pages/promotions_page.dart';
 import 'data/repositories/account_repository.dart';
 import 'data/repositories/auth_repository.dart';
+import 'data/repositories/promo_repository.dart';
+import 'presentation/bloc/auth/auth_bloc.dart';
 
+import 'core/di/injector.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
   await init();
   runApp(const MyApp());
 }
@@ -49,6 +58,7 @@ class AppWrapper extends StatefulWidget {
 }
 
 class _AppWrapperState extends State<AppWrapper> {
+  int _currentIndex = 0;
   String? _login;
   String? _token;
 
@@ -64,10 +74,13 @@ class _AppWrapperState extends State<AppWrapper> {
               _token = state.token;
             });
           });
-        } else if (state is Unauthenticated) {
+        } else if (state is Unauthenticated ||
+            state is AuthFailure ||
+            state is SessionExpiredState) {
           setState(() {
             _login = null;
             _token = null;
+            _currentIndex = 0;
           });
         }
       },
@@ -81,14 +94,45 @@ class _AppWrapperState extends State<AppWrapper> {
         }
 
         if (state is AuthSuccess && _login != null && _token != null) {
-          return BlocProvider(
-            create: (context) => AccountBloc(
-              accountRepository: getIt<AccountRepository>(),
-              login: _login!,
-              token: _token!,
-            ),
-            child: DashboardPage(
-              login: _login!,
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<AccountBloc>(
+                create: (context) => AccountBloc(
+                  accountRepository: getIt<AccountRepository>(),
+                  login: _login!,
+                  token: _token!,
+                ),
+              ),
+              BlocProvider<PromoBloc>(
+                create: (context) => PromoBloc(getIt<PromoRepository>()),
+              ),
+            ],
+            child: Scaffold(
+              body: IndexedStack(
+                index: _currentIndex,
+                children: [
+                  DashboardPage(login: _login!),
+                  const PromotionsPage(),
+                ],
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.dashboard),
+                    label: 'Dashboard',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.campaign),
+                    label: 'Promotions',
+                  ),
+                ],
+              ),
             ),
           );
         }

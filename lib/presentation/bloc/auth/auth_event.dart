@@ -20,3 +20,12 @@ class LoginRequested extends AuthEvent {
 class LogoutRequested extends AuthEvent {}
 
 class CheckAuthStatus extends AuthEvent {}
+
+class SessionExpired extends AuthEvent {
+  final String message;
+
+  const SessionExpired({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

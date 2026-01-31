@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/auth/auth_bloc.dart';
 
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -65,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
                       labelText: 'Account Number',
                       prefixIcon: Icon(Icons.person),
                       border: OutlineInputBorder(),
+                      hintText: 'Enter your account number',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -76,23 +78,24 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: _obscurePassword,
+                    // obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
+                      // suffixIcon: IconButton(
+                      //   icon: Icon(
+                      //     _obscurePassword
+                      //         ? Icons.visibility
+                      //         : Icons.visibility_off,
+                      //   ),
+                      //   onPressed: () {
+                      //     setState(() {
+                      //       _obscurePassword = !_obscurePassword;
+                      //     });
+                      //   },
+                      // ),
                       border: const OutlineInputBorder(),
+                      hintText: 'Enter your password',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -104,27 +107,43 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 24),
                   BlocConsumer<AuthBloc, AuthState>(
                     listener: (context, state) {
-                      if (state is AuthSuccess) {
-                        // Navigation handled by main widget
-                      } else if (state is AuthFailure) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(state.error),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
+                      if (state is SessionExpiredState) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.message),
+                              backgroundColor: Colors.orange,
+                            ),
+                          );
+                        });
                       }
                     },
                     builder: (context, state) {
-                      if (state is AuthLoading) {
-                        return const ElevatedButton(
-                          onPressed: null,
-                          child: SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
+                      // if (state is AuthLoading) {
+                      //   return const ElevatedButton(
+                      //     onPressed: null,
+                      //     style: ButtonStyle(
+                      //       minimumSize: MaterialStatePropertyAll(
+                      //         Size(double.infinity, 50),
+                      //       ),
+                      //     ),
+                      //     child: SizedBox(
+                      //       height: 24,
+                      //       width: 24,
+                      //       child: CircularProgressIndicator(),
+                      //     ),
+                      //   );
+                      // }
+
+                      if (state is AuthFailure) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.error),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        });
                       }
 
                       return ElevatedButton(
@@ -139,6 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
                           minimumSize: const Size(double.infinity, 50),
                         ),
                         child: const Text(
@@ -149,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  const SelectableText(
                     'Test Account:\nLogin: 2088888\nPassword: ral11lod',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey),

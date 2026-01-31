@@ -5,9 +5,18 @@ class LoginRequest {
   LoginRequest({required this.login, required this.password});
 
   Map<String, dynamic> toJson() => {
-    'login': login,
+    'login': _parseLogin(login),
     'password': password,
   };
+
+  // Try to parse login as integer, fall back to string if it fails
+  dynamic _parseLogin(String login) {
+    try {
+      return int.parse(login);
+    } catch (e) {
+      return login;
+    }
+  }
 }
 
 class LoginResponse {

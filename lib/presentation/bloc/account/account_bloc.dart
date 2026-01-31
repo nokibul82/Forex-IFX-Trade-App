@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 
+import '../../../core/exceptions/app_exceptions.dart';
 import '../../../data/models/account_models.dart';
 import '../../../data/models/trade_models.dart';
 import '../../../data/repositories/account_repository.dart';
@@ -52,8 +53,14 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         trades: trades,
         totalProfit: totalProfit,
       ));
+    } on AuthException catch (e) {
+      emit(AccountSessionExpired(e.message));
+    } on ServerException catch (e) {
+      emit(AccountError(e.message));
+    } on NetworkException catch (e) {
+      emit(AccountError('Network error: ${e.message}'));
     } catch (e) {
-      emit(AccountError(e.toString()));
+      emit(AccountError('An unexpected error occurred'));
     }
   }
 
@@ -61,6 +68,10 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       RefreshAccountData event,
       Emitter<AccountState> emit,
       ) async {
+    if (state is AccountLoaded) {
+      emit((state as AccountLoaded).copyWith(isRefreshing: true));
+    }
+
     try {
       final trades = await _accountRepository.getOpenTrades(login, token);
       final accountInfo = await _accountRepository.getAccountInformation(
@@ -77,16 +88,20 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
             (sum, trade) => sum + trade.profit,
       );
 
-      if (state is AccountLoaded) {
-        emit(AccountLoaded(
-          accountInformation: accountInfo,
-          lastFourPhoneNumbers: phoneNumbers,
-          trades: trades,
-          totalProfit: totalProfit,
-        ));
-      }
+      emit(AccountLoaded(
+        accountInformation: accountInfo,
+        lastFourPhoneNumbers: phoneNumbers,
+        trades: trades,
+        totalProfit: totalProfit,
+      ));
+    } on AuthException catch (e) {
+      emit(AccountSessionExpired(e.message));
+    } on ServerException catch (e) {
+      emit(AccountError(e.message));
+    } on NetworkException catch (e) {
+      emit(AccountError('Network error: ${e.message}'));
     } catch (e) {
-      emit(AccountError(e.toString()));
+      emit(AccountError('An unexpected error occurred'));
     }
   }
 }

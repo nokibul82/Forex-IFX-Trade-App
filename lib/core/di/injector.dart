@@ -8,6 +8,8 @@ import '../../data/repositories/account_repository.dart';
 import '../../data/repositories/account_repository_impl.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/promo_repository.dart';
+import '../../data/repositories/promo_repository_impl.dart';
 import '../network/dio_client.dart';
 
 final getIt = GetIt.instance;
@@ -37,6 +39,11 @@ Future<void> init() async {
   );
   getIt.registerLazySingleton<AccountRepository>(
         () => AccountRepositoryImpl(
+      getIt<RemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<PromoRepository>(
+        () => PromoRepositoryImpl(
       getIt<RemoteDataSource>(),
     ),
   );

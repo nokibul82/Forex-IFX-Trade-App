@@ -16,13 +16,31 @@ class AccountLoaded extends AccountState {
   final String lastFourPhoneNumbers;
   final List<Trade> trades;
   final double totalProfit;
+  final bool isRefreshing;
 
   const AccountLoaded({
     required this.accountInformation,
     required this.lastFourPhoneNumbers,
     required this.trades,
     required this.totalProfit,
+    this.isRefreshing = false,
   });
+
+  AccountLoaded copyWith({
+    AccountInformation? accountInformation,
+    String? lastFourPhoneNumbers,
+    List<Trade>? trades,
+    double? totalProfit,
+    bool? isRefreshing,
+  }) {
+    return AccountLoaded(
+      accountInformation: accountInformation ?? this.accountInformation,
+      lastFourPhoneNumbers: lastFourPhoneNumbers ?? this.lastFourPhoneNumbers,
+      trades: trades ?? this.trades,
+      totalProfit: totalProfit ?? this.totalProfit,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
+    );
+  }
 
   @override
   List<Object> get props => [
@@ -30,6 +48,7 @@ class AccountLoaded extends AccountState {
     lastFourPhoneNumbers,
     trades,
     totalProfit,
+    isRefreshing,
   ];
 }
 
@@ -40,4 +59,13 @@ class AccountError extends AccountState {
 
   @override
   List<Object> get props => [error];
+}
+
+class AccountSessionExpired extends AccountState {
+  final String message;
+
+  const AccountSessionExpired(this.message);
+
+  @override
+  List<Object> get props => [message];
 }

@@ -55,33 +55,34 @@ class _DashboardPageState extends State<DashboardPage> {
           }
 
           if (state is AccountError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${state.error}. Session may expire please logout and login again',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<AccountBloc>().add(LoadAccountData());
-                        },
-                        child: const Text('Retry'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthBloc>().add(LogoutRequested());
-                        },
-                        child: const Text('Logout'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Error: ${state.error}',
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<AccountBloc>().add(LoadAccountData());
+                      },
+                      child: const Text('Retry'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<AuthBloc>().add(LogoutRequested());
+                      },
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ),
+              ],
             );
           }
 

@@ -30,3 +30,12 @@ class AuthFailure extends AuthState {
   @override
   List<Object> get props => [error];
 }
+
+class SessionExpiredState extends AuthState {
+  final String message;
+
+  const SessionExpiredState(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
