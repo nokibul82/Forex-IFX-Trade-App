@@ -8,12 +8,10 @@ import '../widgets/trade_card.dart';
 
 class DashboardPage extends StatefulWidget {
   final String login;
-  final String token;
 
   const DashboardPage({
     super.key,
     required this.login,
-    required this.token,
   });
 
   @override
@@ -33,6 +31,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: const Text('Dashboard'),
         actions: [
           IconButton(
@@ -61,15 +60,25 @@ class _DashboardPageState extends State<DashboardPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Error: ${state.error}',
+                    'Error: ${state.error}. Session may expire please logout and login again',
                     style: const TextStyle(color: Colors.red),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<AccountBloc>().add(LoadAccountData());
-                    },
-                    child: const Text('Retry'),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<AccountBloc>().add(LoadAccountData());
+                        },
+                        child: const Text('Retry'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<AuthBloc>().add(LogoutRequested());
+                        },
+                        child: const Text('Logout'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -86,6 +95,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     // Account Info Card
                     Card(
+                      elevation: 10,
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       margin: const EdgeInsets.all(16),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -95,12 +106,17 @@ class _DashboardPageState extends State<DashboardPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  state.accountInformation.name,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.person,color: Theme.of(context).colorScheme.primary,),
+                                    Text(
+                                      state.accountInformation.name,
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -108,7 +124,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
+                                    color: Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
@@ -172,9 +188,10 @@ class _DashboardPageState extends State<DashboardPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Card(
+                        elevation: 10,
                         color: state.totalProfit >= 0
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.red.withOpacity(0.1),
+                            ? Colors.greenAccent
+                            : Colors.redAccent,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Row(
@@ -192,9 +209,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: state.totalProfit >= 0
-                                      ? Colors.green
-                                      : Colors.red,
+                                  color: Colors.black87,
                                 ),
                               ),
                             ],

@@ -89,7 +89,6 @@ class _AppWrapperState extends State<AppWrapper> {
             ),
             child: DashboardPage(
               login: _login!,
-              token: _token!,
             ),
           );
         }

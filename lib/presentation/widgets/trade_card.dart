@@ -11,6 +11,7 @@ class TradeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 10,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -34,14 +35,14 @@ class TradeCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: trade.type == 0
-                        ? Colors.blue.withOpacity(0.1)
-                        : Colors.orange.withOpacity(0.1),
+                        ? Colors.blueAccent.withValues(alpha: 0.1)
+                        : Colors.orangeAccent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    trade.type == 0 ? 'BUY' : 'SELL',
+                    trade.type == 0 ? 'TYPE: BUY' : 'TYPE: SELL',
                     style: TextStyle(
-                      color: trade.type == 0 ? Colors.blue : Colors.orange,
+                      color: trade.type == 0 ? Colors.blueAccent : Colors.orangeAccent,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
