@@ -1,0 +1,6 @@
+package com.example.forex_ifx_trade_app;
+
+import io.flutter.embedding.android.FlutterActivity;
+
+public class MainActivity extends FlutterActivity {
+}
